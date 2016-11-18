@@ -21,18 +21,16 @@ def convert_uniform_number_to_player_id(match_id, is_home, uniform_number):
         config["SPORTS_DATA_FOLDER_PATH"] +\
         config["BALL_TOUCH_DATA_FOLDER_PATH"] +\
         config["BALL_TOUCH_PLAYER_LIST_PATH"]
-    
-    dataframe = pd.read_csv(common.path.get_abs_pass(player_list_path), encoding='Shift_JIS')
-    columns = dataframe.columns.tolist()
-    rows = dataframe.values
+    columns, rows = common.file.read_csv(common.path.get_abs_pass(player_list_path))
 
     for row in rows:
-        _homeaway_f = row[columns.index("ホームアウェイF")]
-        _match_id = row[columns.index("試合ID")]
-        _uniform_number = row[columns.index("背番号")]
-        _player_id = row[columns.index("選手ID")]
+        _homeaway_f = int(row[columns.index("ホームアウェイF")])
+        _match_id = int(row[columns.index("試合ID")])
+        _uniform_number = int(row[columns.index("背番号")])
+        _player_id = int(row[columns.index("選手ID")])
 
         if _homeaway_f == homeaway_f\
             and _match_id == match_id\
             and _uniform_number == uniform_number:
             return _player_id
+    raise ValueError("プレイヤーが存在しませんでした。")

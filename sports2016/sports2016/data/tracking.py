@@ -27,7 +27,7 @@ class Tracking():
         _, data = common.file.read_csv(common.path.get_abs_pass(self.__filepath))
         for frame in data:
             if self.__start_frame_id is None:
-                self.__start_frame_id = frame[0]
+                self.__start_frame_id = int(frame[0])
             for i in range(0, 29):
                 self.__data.append(
                     TrackingFramePlayer(frame[0], frame[i*6+1], frame[i*6+2], frame[i*6+3],
@@ -37,12 +37,12 @@ class Tracking():
         config = common.config.load()
         base_path = config["SPORTS_DATA_FOLDER_PATH"] + config["TRACKING_DATA_FOLDER_PATH"]
         for match_config in config["TRACKING_DATA_CONFIG"]:
-            match_id = match_config["試合ID"]
-            match_status_id = match_config["試合状態ID"]
+            match_id = int(match_config["試合ID"])
+            match_status_id = int(match_config["試合状態ID"])
             match_path = match_config["path"]
             if match_id == self.__game_id and match_status_id == self.__game_status_id:
                 return base_path + match_path
-        raise Exception("指定された試合ファイルが見つかりませんでした。")
+        raise IOError("指定された試合ファイルが見つかりませんでした。")
 
     def find_tracking_frame_players(self, frame_id) -> [TrackingFramePlayer]:
         """

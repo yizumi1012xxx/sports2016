@@ -15,10 +15,10 @@ class SportsDataset():
     """
 
     def __init__(self, match_id, match_status_id):
-        self.__match_id = match_id
-        self.__match_status_id = match_status_id
-        self.__ball_touch = BallTouchCustom(match_id, match_status_id)
-        self.__tracking = Tracking(match_id, match_status_id)
+        self.__match_id = int(match_id)
+        self.__match_status_id = int(match_status_id)
+        self.__ball_touch = BallTouchCustom(self.__match_id, self.__match_status_id)
+        self.__tracking = Tracking(self.__match_id, self.__match_status_id)
 
         frames = self.__ball_touch.get_frames()
         for frame in frames:
@@ -39,7 +39,6 @@ class SportsDataset():
                     player_y = player.get_point_y()
                     player_is_home = player.is_home()
                     player_id = self.__get_player_id(player_is_home, player.get_uniform_number())
-                    print(player_id)
                     sports_dataset_frame_player = SportsDatasetFramePlayer(
                         player_id, player_x, player_y)
 
@@ -59,7 +58,7 @@ class SportsDataset():
         pass
 
     def __get_player_id(self, is_home, uniform_number):
-        common.util.convert_uniform_number_to_player_id(self.__match_id, is_home, uniform_number)
+        return common.util.convert_uniform_number_to_player_id(self.__match_id, is_home, uniform_number)
 
 class SportsDatasetFramePlayer():
 

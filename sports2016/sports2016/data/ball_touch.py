@@ -23,8 +23,8 @@ class BallTouchCustom():
         # load
         header, datas = common.file.read_csv(self.__filepath)
         for data in datas:
-            data_match_id = data[header.index("matchID")]
-            data_match_status_id = data[header.index("matchState")]
+            data_match_id = int(data[header.index("matchID")])
+            data_match_status_id = int(data[header.index("matchState")])
             if self.__match_id == data_match_id and self.__match_status_id == data_match_status_id:
                 self.__data.append(BallTouchAction(header, data))
 

@@ -11,7 +11,7 @@ def read_csv(filepath):
     """
     read_csv
     """
-    dataframe = pd.read_csv(filepath, encoding='Shift_JIS')
+    dataframe = pd.read_csv(filepath, encoding='Shift_JIS', dtype='str')
     return dataframe.columns.tolist(), dataframe.values
 
 def write_csv(header, data, filepath):

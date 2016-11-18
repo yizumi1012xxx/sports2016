@@ -12,12 +12,12 @@ class BallTouchAction():
     AWAY = 2
 
     def __init__(self, header, data):
-        self.frame_id = data[header.index("frameID")]
-        self.team_id = data[header.index("teamID")]
-        self.player_id = data[header.index("playerID")]
-        self.homeaway = data[header.index("homeaway")]
-        self.ball_x = data[header.index("ballX")]
-        self.ball_y = data[header.index("ballY")]
+        self.frame_id = int(data[header.index("frameID")])
+        self.team_id = int(data[header.index("teamID")])
+        self.player_id = int(data[header.index("playerID")])
+        self.homeaway = int(data[header.index("homeaway")])
+        self.ball_x = float(data[header.index("ballX")])
+        self.ball_y = float(data[header.index("ballY")])
         # self.attack_no = data[header.index("attackNo")]
         # self.history_id = data[header.index("historyID")]
 

@@ -11,13 +11,13 @@ class TrackingFramePlayer():
     HOME = 1
 
     def __init__(self, frame_id, team_id, system_target_id, uniform_number, point_x, point_y, velocity):
-        self.__frame_id = frame_id
-        self.__team_id = team_id
-        self.__system_target_id = system_target_id
-        self.__uniform_number = uniform_number
-        self.__point_x = point_x
-        self.__point_y = point_y
-        self.__velocity = velocity
+        self.__frame_id = int(frame_id)
+        self.__team_id = int(team_id)
+        self.__system_target_id = int(system_target_id)
+        self.__uniform_number = int(uniform_number)
+        self.__point_x = float(point_x)
+        self.__point_y = float(point_y)
+        self.__velocity = float(velocity)
 
     def get_frame_id(self):
         """
