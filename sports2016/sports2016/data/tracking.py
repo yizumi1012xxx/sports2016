@@ -6,13 +6,13 @@ import common.flag as flag
 
 
 class Tracking():
-    FRAME_RATE = 25
-    u"""
+    """
     tracking dataを読み取りデータを保持するクラス。
     """
+    FRAME_RATE = 25
 
     def __init__(self, filepath, game_id, game_status_id):
-        
+
         self.filepath = filepath
         self.game_id = game_id
         self.game_status_id = game_status_id
@@ -22,6 +22,9 @@ class Tracking():
         self.__get_data_from_csv()
 
     def get_id(self):
+        """
+        game_idとgame_status_idを取得
+        """
         return self.game_id, self.game_status_id
 
     def __get_data_from_csv(self):
@@ -42,8 +45,8 @@ class Tracking():
         試合経過時間から最も近いフレームを探し，TrackingFrameを返す
         elapsed_seconds: 経過時間[秒]
         """
-        frame = elapsed_seconds * FRAME_RATE + self.start_frame_id
-        return find_tracking_frame_by_frame_id(frame)
+        frame = elapsed_seconds * self.FRAME_RATE + self.start_frame_id
+        return self.find_tracking_frame_by_frame_id(frame)
     
     def find_tracking_frame_by_frame_id(self, frame_id):
         for frame in self.data:
@@ -52,12 +55,12 @@ class Tracking():
         raise Exception("frameIdが不正です。")
 
     def find_tracking_frame_home_player_by_elapsed_time(self, elapsed_seconds):
-        frame_id = elapsed_seconds * FRAME_RATE + self.start_frame_id
+        frame_id = elapsed_seconds * self.FRAME_RATE + self.start_frame_id
         frame = self.find_tracking_frame_by_frame_id(frame_id)
         return TrackingFrameHomePlayer(frame)
 
     def find_tracking_frame_away_player_by_elapsed_time(self, elapsed_seconds):
-        frame_id = elapsed_seconds * FRAME_RATE + self.start_frame_id
+        frame_id = elapsed_seconds * self.FRAME_RATE + self.start_frame_id
         frame = self.find_tracking_frame_by_frame_id(frame_id)
         return TrackingFrameAwayPlayer(frame)
 

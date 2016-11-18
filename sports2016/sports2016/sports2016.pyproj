@@ -60,6 +60,7 @@
     <Folder Include="variables\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config.ini" />
     <Content Include="README.md">
       <SubType>Code</SubType>
     </Content>
