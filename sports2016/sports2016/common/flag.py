@@ -1,7 +1,18 @@
 # -*- coding: utf-8 -*-
+"""
+flag.py
+"""
 
 HOME = 1
 AWAY = 0
 
 FIRSTTIME = 1
 SECONDTIME = 2
+
+FIELD_WIDTH = 105.
+FIELD_HEIGHT = 68.
+
+IMAGE_X_MIN = -60
+IMAGE_X_MAX = 60
+IMAGE_Y_MIN = -40
+IMAGE_Y_MAX = 40

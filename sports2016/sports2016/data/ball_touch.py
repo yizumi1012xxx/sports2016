@@ -3,100 +3,33 @@
 This file include class related treating ball touch data.
 """
 
-import common.path as path
-import common.file as file
-import common.flag as flag
+import common.file
+import common.config
+import common.path
+from data.ball_touch_action import BallTouchAction
 
 class BallTouchCustom():
     """
     This class treat ball touch data.
     """
 
-    def __init__(self, filepath):
-        self.__filepath = filepath
+    def __init__(self, match_id, match_status_id):
+        config = common.config.load()
+        self.__filepath = common.path.get_abs_pass(
+            config["SPORTS_DATA_FOLDER_PATH"] + config["BALL_TOUCH_DATA_PATH"])
+        self.__match_id = match_id
+        self.__match_status_id = match_status_id
         self.__data = []
-        self.__load()
-
-    def __load(self):
-        header, datas = file.read_csv(self.__filepath)
+        # load
+        header, datas = common.file.read_csv(self.__filepath)
         for data in datas:
-            self.__data.append(BallTouchAction(header, data))
+            data_match_id = data[header.index("matchID")]
+            data_match_status_id = data[header.index("matchState")]
+            if self.__match_id == data_match_id and self.__match_status_id == data_match_status_id:
+                self.__data.append(BallTouchAction(header, data))
 
-    def get_match_actions(self, match_id, match_status_id):
+    def get_frames(self) -> [BallTouchAction]:
         """
-        get match actions by match_id and match_status_id
+        get_frames
         """
-        ret = []
-        for data in self.__data:
-            __match_id = data[self.__header.index("matchID")]
-            __match_states_id = data[self.__header.index("matchState")]
-            if(__match_id == match_id and __match_states_id == match_status_id):
-                pass
-
-class BallTouchAction():
-    """
-    This class treat ball touch action data.
-    """
-
-    def __init__(self, header, data):
-        self.match_id = data[header.index("matchID")]
-        self.match_status_id = data[header.index("matchState")]
-        self.frame_id = data[header.index("frameID")]
-        self.team_id = data[header.index("teamID")]
-        # タッチプレイヤーID: 背番号に変換する必要あり.
-        self.player_id = data[header.index("playerID")]
-        # ballタッチプレイヤーがhome or away
-        self.homeaway = data[header.index("homeaway")]
-        self.ball_x = data[header.index("ballX")]
-        self.ball_y = data[header.index("ballY")]
-        # self.attack_no = data[header.index("attackNo")]
-        # self.history_id = data[header.index("historyID")]
-
-    def get_match_id(self):
-        """
-        Get match_id.
-        """
-        return self.match_id
-
-    def get_match_status_id(self):
-        """
-        Get match_status_id.
-        """
-        return self.match_status_id
-
-    def get_frame_id(self):
-        """
-        Get frame_id.
-        """
-        return self.frame_id
-
-    def get_team_id(self):
-        """
-        Get team_id.
-        """
-        return self.team_id
-
-    def get_player_id(self):
-        """
-        Get player_id.
-        """
-        return self.player_id
-
-    def get_homeaway(self):
-        """
-        Get home-away constant.
-        home:1, away:2
-        """
-        return self.homeaway
-
-    def get_ball_x(self):
-        """
-        Get x-coordinate of ball.
-        """
-        return self.ball_x
-
-    def get_ball_y(self):
-        """
-        Get y-coordinate of ball.
-        """
-        return self.ball_y
+        return self.__data

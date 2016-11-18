@@ -1,6 +1,8 @@
 {
-    "SPORTS_DATA_FOLDER_PATH" : "C:/Users/Yuichiro/GoogleDrive/sports2016/",
-    "BALL_TOUCH_DATA_PATH" : "data/data4LDA_action.csv",
+    "SPORTS_DATA_FOLDER_PATH" : "../../../data/",
+    "BALL_TOUCH_DATA_PATH" : "data4LDA_action.csv",
+    "BALL_TOUCH_DATA_FOLDER_PATH" : "data(password無し)/16~17コンペ_サッカー（ボールタッチ）_08/",
+    "BALL_TOUCH_PLAYER_LIST_PATH" : "出場選手リスト_TB.xlsx",
     "TRACKING_DATA_FOLDER_PATH" : "data(password無し)/16~17コンペ_サッカー（トラッキング）_08/",
     "TRACKING_DATA_CONFIG" : [
         {"path": "2016022701_磐田vs名古屋_前半_08.csv", "試合ID": 2016022701, "試合状態ID": 1},

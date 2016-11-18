@@ -241,4 +241,6 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
+# for sport2016
 *.pyc
+/data/
