@@ -28,14 +28,14 @@ class TrackingFramePlayer():
     def is_home(self):
         """
         get_team_id
-        away:0, home:1
+        away:0, home:1, 審判:3, 不明:4
         """
         if self.__team_id == 0:
             return False
         elif self.__team_id == 1:
             return True
         else:
-            raise ValueError("team_idが不正です。")
+            raise ValueError("team_idが不正です。[%s]"%self.__team_id)
 
     def get_uniform_number(self):
         """

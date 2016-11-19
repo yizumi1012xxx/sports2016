@@ -2,6 +2,9 @@
 
 import os
 
+def get_desktop_path():
+    return os.getenv("HOMEDRIVE") + os.getenv("HOMEPATH") + "/Desktop/"
+
 def get_abs_pass(filepath):
     return os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), filepath))
 

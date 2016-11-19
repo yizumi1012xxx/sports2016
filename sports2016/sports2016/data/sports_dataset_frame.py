@@ -3,46 +3,67 @@
 sports_dataset_frame.py
 """
 
+from data.sports_dataset_frame_player import SportsDatasetFramePlayer
+
 class SportsDatasetFrame():
     """
     SportsDatasetFrame
     """
 
-    def __init__(self, frame_id, ball_x, ball_y, attack_player, attack_team_players, defence_team_players):
-        pass
+    def __init__(self, match_status_id, frame_id, history_id, ball_x, ball_y, ball_player, home_players, away_players):
+        self.__match_status_id = match_status_id
+        self.__frame_id = frame_id
+        self.__history_id = history_id
+        self.__ball_x = ball_x
+        self.__ball_y = ball_y
+        self.__ball_player = ball_player
+        self.__home_players = home_players
+        self.__away_players = away_players
 
-    def get_frame_id(self):
+    def get_match_status_id(self) -> int:
+        """
+        get_match_status_id
+        """
+        return self.__match_status_id
+
+    def get_frame_id(self) -> int:
         """
         get_frame_id
         """
-        pass
+        return self.__frame_id
 
-    def get_ball_x(self):
+    def get_history_id(self) -> int:
+        """
+        get_history_id
+        """
+        return self.__history_id
+
+    def get_ball_x(self) -> float:
         """
         get_ball_x
         """
-        pass
+        return self.__ball_x
 
-    def get_ball_y(self):
+    def get_ball_y(self) -> float:
         """
         get_ball_y
         """
-        pass
+        return self.__ball_y
 
-    def get_attack_player(self):
+    def get_ball_player(self) -> SportsDatasetFramePlayer:
         """
-        get_attack_player
+        get_ball_player
         """
-        pass
+        return self.__ball_player
 
-    def get_attack_team_players(self):
+    def get_home_players(self) -> [SportsDatasetFramePlayer]:
         """
-        get_attack_team_players
+        get_home_players
         """
-        pass
+        return self.__home_players
 
-    def get_defence_team_players(self):
+    def get_away_players(self) -> [SportsDatasetFramePlayer]:
         """
-        get_defence_team_players
+        get_away_players
         """
-        pass
+        return self.__away_players

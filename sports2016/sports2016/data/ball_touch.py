@@ -14,13 +14,18 @@ class BallTouchCustom():
     """
 
     def __init__(self, match_id, match_status_id):
-        config = common.config.load()
-        self.__filepath = common.path.get_abs_pass(
-            config["SPORTS_DATA_FOLDER_PATH"] + config["BALL_TOUCH_DATA_PATH"])
         self.__match_id = match_id
         self.__match_status_id = match_status_id
+        self.__filepath = self.__get_filepath()
         self.__data = []
-        # load
+        self.__load()
+
+    def __get_filepath(self):
+        config = common.config.load()
+        filepath = config["SPORTS_DATA_FOLDER_PATH"] + config["BALL_TOUCH_DATA_PATH"]
+        return common.path.get_abs_pass(filepath)
+
+    def __load(self):
         header, datas = common.file.read_csv(self.__filepath)
         for data in datas:
             data_match_id = int(data[header.index("matchID")])
