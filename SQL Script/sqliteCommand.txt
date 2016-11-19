@@ -10,31 +10,56 @@ create table playdata2
 	inner join playkind on playdata.アクションID = playkind.アクションID;
 
 create table attack 
-	as select 試合ID, 攻撃番号 from playdata 
+	as select 試合ID, 攻撃番号, 攻撃開始履歴No from playdata 
 	where not 攻撃番号 = 0 
 	group by 試合ID, 攻撃番号 
 	order by rowid;
 
+create table attack_ha
+	as select attack.*, playdata.ホームアウェイF 
+	from attack
+	inner join playdata 
+		on attack.試合ID||attack.攻撃開始履歴No = playdata.試合ID||playdata.履歴No;
+
+create table playdata3
+	as select playdata2.*, attack_ha.ホームアウェイF as attackTeam
+	from playdata2
+	inner join attack_ha
+		on playdata2.試合ID||playdata2.攻撃番号 = attack_ha.試合ID||attack_ha.攻撃番号;
+
+
+create table data4LDA as
 select
-	playdata2.試合ID as matchID,
-	playdata2.攻撃番号 as attackNo,
-	playdata2.履歴No as historyID,
-	playdata2.試合状態ID as matchState,
-	playdata2.絶対時間 as time,
-	playdata2.絶対時間ミリ秒 as mtime,
-	playdata2.チームID as teamID,
-	playdata2.選手ID as playerID,
-	playdata2.ホームアウェイF as homeaway,
-	playdata2.ボールＸ as ballX,
-	playdata2.ボールＹ as ballY,
-	attack.rowid as attackID,
-	"HOTZONE6-9" as hotzone,
-	case when アクションID = 29 then "Pass_"||展開力||"_"||F_成功
-		when アクションID = 30 then "Pass_"||展開力||"_"||F_成功
+	playdata3.試合ID as matchID,
+	playdata3.攻撃番号 as attackNo,
+	playdata3.履歴No as historyID,
+	playdata3.試合状態ID as matchState,
+	playdata3.絶対時間 as time,
+	playdata3.絶対時間ミリ秒 as mtime,
+	playdata3.チームID as teamID,
+	playdata3.選手ID as playerID,
+	playdata3.ホームアウェイF as homeaway,
+	playdata3.ボールＸ as ballX,
+	playdata3.ボールＹ as ballY,
+	playdata3.attackTeam as attackTeam,
+	attack_ha.rowid as attackID,
+	
+	case when attackTeam = playdata3.ホームアウェイF then "hotzone_"||playdata3."HOTZONE6-9"
+		else "hotzone_"||(55-playdata3."HOTZONE6-9")
+		end as hotzone,
+		
+	case when (アクションID = 29 or アクションID = 30) and attackTeam = playdata3.ホームアウェイF then "Pass_"||展開力||"_"||F_成功
+		when アクションID = 50 and attackTeam = playdata3.ホームアウェイF then "Trap_"||展開力||"_"||F_成功
+		when (not attackTeam = playdata3.ホームアウェイF) then "defenseAction"
 		else actionName
 		end  as actionWord
-from playdata2
-inner join attack
-	on playdata2.試合ID||playdata2.攻撃番号 = attack.試合ID||attack.攻撃番号;
+from playdata3
+inner join attack_ha
+	on playdata3.試合ID||playdata3.攻撃番号 = attack_ha.試合ID||attack_ha.攻撃番号;
+
+.output output.csv
+select * from data4LDA;
+.output stdout
+
 
 
