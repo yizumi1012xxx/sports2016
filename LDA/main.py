@@ -1,17 +1,12 @@
 '''
 https://openbook4.me/projects/193/sections/1154
+https://radimrehurek.com/gensim/apiref.html
 '''
 
 import os
 import csv
 import pandas as pd
 from gensim import corpora, models
-
-
-# global param
-MODEL = None
-DICTONARY = None
-
 
 def get_absolute_path(filepath):
     return os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), filepath))
@@ -48,6 +43,7 @@ def get_data(filepath):
         offside_line_defense_word = row[columns.index("OffsideLineDefenseWord")]
         front_line_word = row[columns.index("FrontLineWord")]
         compactness__offside = row[columns.index("Compactness__Offside")]
+        neighbor_player = row[columns.index("NeighborPlayerWord")]
 
         if attack_id not in output_dict:
             output_dict[attack_id] = []
@@ -62,18 +58,22 @@ def get_data(filepath):
         #output_dict[attack_id].append(offside_line_defense_word)
         #output_dict[attack_id].append(front_line_word)
         output_dict[attack_id].append(compactness__offside)
+        output_dict[attack_id].append(neighbor_player)
 
     for attack_id, row in output_dict.items():
         output_list.append(' '.join(row))
 
     return output_list
 
-def get_topic_dist(model, dictionary):
+def get_topic_distribution_of_doc(model, dictionary):
     """
-    get_word_probability_sorted_by_topic
-    トピックごとの単語の出現頻度を出力
+    ドキュメントごとのトピック分布を出力
     """
 
+def get_word_distribution_of_topic(model, dictionary):
+    """
+    トピックごとの単語分布を出力
+    """
     rows = []
     columns = ["word"]
     for word in dictionary.items():
@@ -99,8 +99,6 @@ def main(documents):
     """
     main
     """
-    global DICTIONARY
-    global MODEL
 
     # remove common words and tokenize
     stoplist = set('for a of the and to in'.split())
@@ -111,17 +109,18 @@ def main(documents):
     tokens_once = set(word for word in set(all_tokens) if all_tokens.count(word) == 1)
     texts = [[word for word in text if word not in tokens_once] for text in texts]
 
-    DICTIONARY = corpora.Dictionary(texts)
-    DICTIONARY.save(get_absolute_path('tmp/deerwester.dict'))
-    DICTIONARY.save_as_text(get_absolute_path('tmp/deerwester_text.dict'))
+    dictionary = corpora.Dictionary(texts)
+    dictionary.save(get_absolute_path('tmp/deerwester.dict'))
+    dictionary.save_as_text(get_absolute_path('tmp/deerwester_text.dict'))
 
-    new_doc = "Human computer interaction"
-    new_vec = DICTIONARY.doc2bow(new_doc.lower().split())
+    # new_doc = "Human computer interaction"
+    # new_vec = dictionary.doc2bow(new_doc.lower().split())
 
-    corpus = [DICTIONARY.doc2bow(text) for text in texts]
+    corpus = [dictionary.doc2bow(text) for text in texts]
     corpora.MmCorpus.serialize(get_absolute_path('tmp/deerwester.mm'), corpus)
 
-    MODEL = models.ldamodel.LdaModel(corpus=corpus, id2word=DICTIONARY, num_topics=10)
+    model = models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=10)
+    return dictionary, model
 
 if __name__ == '__main__':
     DOC1 = get_data(get_absolute_path('tmp/LDAdocuments.csv'))
@@ -134,5 +133,5 @@ if __name__ == '__main__':
             "The intersection graph of paths in trees",
             "Graph minors IV Widths of trees and well quasi ordering",
             "Graph minors A survey"]
-    main(DOC1)
-    get_topic_dist(MODEL, DICTIONARY)
+    DICTIONARY, MODEL = main(DOC1)
+    get_word_distribution_of_topic(MODEL, DICTIONARY)
