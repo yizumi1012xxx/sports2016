@@ -6,6 +6,12 @@ import os
 from gensim import corpora, models
 import pandas as pd
 
+
+# global param
+MODEL = None
+DICTONARY = None
+
+
 def get_absolute_path(filepath):
     return os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), filepath))
 
@@ -37,13 +43,13 @@ def get_data(filepath):
 
         output_dict[attack_id].append(hotzone)
         output_dict[attack_id].append(action_word)
-        output_dict[attack_id].append(compactness_attack_word)
+        #output_dict[attack_id].append(compactness_attack_word)
         output_dict[attack_id].append(compactness_defense_word)
-        output_dict[attack_id].append(vulnerability_attack_word)
+        #output_dict[attack_id].append(vulnerability_attack_word)
         output_dict[attack_id].append(vulnerability_defense_word)
         output_dict[attack_id].append(offside_line_attack_word)
         output_dict[attack_id].append(offside_line_defense_word)
-        output_dict[attack_id].append(front_line_word)
+        #output_dict[attack_id].append(front_line_word)
 
     for attack_id, row in output_dict.items():
         output_list.append(' '.join(row))
@@ -65,33 +71,36 @@ def main(documents):
     # print('texts')
     # print(texts)
     # print()
-
-    dictionary = corpora.Dictionary(texts)
-    dictionary.save(get_absolute_path('tmp/deerwester.dict'))
-    dictionary.save_as_text(get_absolute_path('tmp/deerwester_text.dict'))
-    # print('dictionary')
-    # print(dictionary)
-    # print(dictionary.token2id)
+        
+    
+    global DICTIONARY
+    DICTIONARY = corpora.Dictionary(texts)
+    DICTIONARY.save(get_absolute_path('tmp/deerwester.dict'))
+    DICTIONARY.save_as_text(get_absolute_path('tmp/deerwester_text.dict'))
+    # print('DICTIONARY')
+    # print(DICTIONARY)
+    # print(DICTIONARY.token2id)
     # print()
 
     new_doc = "Human computer interaction"
-    new_vec = dictionary.doc2bow(new_doc.lower().split())
+    new_vec = DICTIONARY.doc2bow(new_doc.lower().split())
     # print('new_vec')
     # print(new_vec)
     # print()
 
-    corpus = [dictionary.doc2bow(text) for text in texts]
+    corpus = [DICTIONARY.doc2bow(text) for text in texts]
     # store to disk, for later use
     corpora.MmCorpus.serialize(get_absolute_path('tmp/deerwester.mm'), corpus)
     # print('corpus')
     # print(corpus)
     # print()
 
-    model = models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=3)
-    # print(model[new_vec])
+    global MODEL
+    MODEL = models.ldamodel.LdaModel(corpus=corpus, id2word=DICTIONARY, num_topics=3)
+    # print(MODEL[new_vec])
 
 if __name__ == '__main__':
-    DOC1 = get_data(os.getenv("HOMEDRIVE") + os.getenv("HOMEPATH") + "/Desktop/LDAdocuments.csv")
+    DOC1 = get_data('LDAdocuments.csv')
     DOC2 = ["Human machine interface for lab abc computer applications",
             "A survey of user opinion of computer system response time",
             "The EPS user interface management system",
