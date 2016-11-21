@@ -13,19 +13,22 @@ class Util:
     """
     Util
     """
-        
+
+    @staticmethod
     def max2(data_array):
         """
         配列から2番目に大きい値を取得
         """
         return sorted(data_array)[-2]
 
+    @staticmethod
     def min2(data_array):
         """
         配列から2番目に小さい値を取得
         """
         return sorted(data_array)[1]
 
+    @staticmethod
     def ave(data_array):
         """
         配列から平均値を取得
