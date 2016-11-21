@@ -2,50 +2,102 @@
 https://openbook4.me/projects/193/sections/1154
 '''
 
+import os
 from gensim import corpora, models, similarities
-documents = ["Human machine interface for lab abc computer applications",
-             "A survey of user opinion of computer system response time",
-             "The EPS user interface management system",
-             "System and human system engineering testing of EPS",
-             "Relation of user perceived response time to error measurement",
-             "The generation of random binary unordered trees",
-             "The intersection graph of paths in trees",
-             "Graph minors IV Widths of trees and well quasi ordering",
-             "Graph minors A survey"]
+import pandas as pd
 
-# remove common words and tokenize
-stoplist = set('for a of the and to in'.split())
-texts = [[word for word in document.lower().split() if word not in stoplist] for document in documents]
+def read_csv(filepath):
+    """
+    read_csv
+    """
+    dataframe = pd.read_csv(filepath, encoding='Shift_JIS', dtype='str')
+    return dataframe.columns.tolist(), dataframe.values
 
-# remove words that appear only once
-all_tokens = sum(texts, [])
-tokens_once = set(word for word in set(all_tokens) if all_tokens.count(word) == 1)
-texts = [[word for word in text if word not in tokens_once] for text in texts] 
-print('texts')
-print(texts)
-print()
+def get_data(filepath):
+    columns, rows = read_csv(filepath)
+    output_dict = {}
+    output_list = []
+    for row in rows:
+        attack_id = row[columns.index("attackID")]
+        hotzone = row[columns.index("hotzone")]
+        action_word = row[columns.index("actionWord")]
+        compactness_attack_word = row[columns.index("CompactnessAttackWord")]
+        compactness_defense_word = row[columns.index("CompactnessDefenseWord")]
+        vulnerability_attack_word = row[columns.index("VulnerabilityAttackWord")]
+        vulnerability_defense_word = row[columns.index("VulnerabilityDefenseWord")]
+        offside_line_attack_word = row[columns.index("OffsideLineAttackWord")]
+        offside_line_defense_word = row[columns.index("OffsideLineDefenseWord")]
+        front_line_word = row[columns.index("FrontLineWord")]
 
-dictionary = corpora.Dictionary(texts)
-dictionary.save('deerwester.dict')
-dictionary.save_as_text('deerwester_text.dict')
-print('dictionary')
-print(dictionary)
-print(dictionary.token2id)
-print()
+        if attack_id not in output_dict:
+            output_dict[attack_id] = []
 
-new_doc = "Human computer interaction"
-new_vec = dictionary.doc2bow(new_doc.lower().split())
-print('new_vec')
-print(new_vec)
-print()
+        output_dict[attack_id].append(hotzone)
+        output_dict[attack_id].append(action_word)
+        output_dict[attack_id].append(compactness_attack_word)
+        output_dict[attack_id].append(compactness_defense_word)
+        output_dict[attack_id].append(vulnerability_attack_word)
+        output_dict[attack_id].append(vulnerability_defense_word)
+        output_dict[attack_id].append(offside_line_attack_word)
+        output_dict[attack_id].append(offside_line_defense_word)
+        output_dict[attack_id].append(front_line_word)
 
-corpus = [dictionary.doc2bow(text) for text in texts]
-corpora.MmCorpus.serialize('/tmp/deerwester.mm', corpus) # store to disk, for later use
-print('corpus')
-print(corpus)
-print()
+    for attack_id, row in output_dict.items():
+        output_list.append(' '.join(row))
 
-model = models.ldamodel.LdaModel(corpus = corpus, id2word=dictionary, num_topics=3)
+    return output_list
 
-print(model[new_vec])
-             
+def main(documents):
+    """
+    main
+    """
+    # remove common words and tokenize
+    stoplist = set('for a of the and to in'.split())
+    texts = [[word for word in document.lower().split() if word not in stoplist] for document in documents]
+
+    # remove words that appear only once
+    all_tokens = sum(texts, [])
+    tokens_once = set(word for word in set(all_tokens) if all_tokens.count(word) == 1)
+    texts = [[word for word in text if word not in tokens_once] for text in texts]
+    print('texts')
+    print(texts)
+    print()
+
+    dictionary = corpora.Dictionary(texts)
+    dictionary.save('deerwester.dict')
+    dictionary.save_as_text('deerwester_text.dict')
+    print('dictionary')
+    print(dictionary)
+    print(dictionary.token2id)
+    print()
+
+    new_doc = "Human computer interaction"
+    new_vec = dictionary.doc2bow(new_doc.lower().split())
+    print('new_vec')
+    print(new_vec)
+    print()
+
+    corpus = [dictionary.doc2bow(text) for text in texts]
+    corpora.MmCorpus.serialize('deerwester.mm', corpus) # store to disk, for later use
+    print('corpus')
+    print(corpus)
+    print()
+
+    model = models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=3)
+    print(model[new_vec])
+
+
+
+if __name__ == '__main__':
+
+    DOC1 = get_data(os.getenv("HOMEDRIVE") + os.getenv("HOMEPATH") + "/Desktop/LDAdocuments.csv")
+    DOC2 = ["Human machine interface for lab abc computer applications",
+            "A survey of user opinion of computer system response time",
+            "The EPS user interface management system",
+            "System and human system engineering testing of EPS",
+            "Relation of user perceived response time to error measurement",
+            "The generation of random binary unordered trees",
+            "The intersection graph of paths in trees",
+            "Graph minors IV Widths of trees and well quasi ordering",
+            "Graph minors A survey"]
+    main(DOC1)
