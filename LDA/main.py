@@ -38,6 +38,7 @@ def get_data(filepath):
         offside_line_defense_word = row[columns.index("OffsideLineDefenseWord")]
         front_line_word = row[columns.index("FrontLineWord")]
         compactness__offside = row[columns.index("Compactness__Offside")]
+        neighbor_player = row[columns.index("NeighborPlayerWord")]
 
         if attack_id not in output_dict:
             output_dict[attack_id] = []
@@ -52,6 +53,7 @@ def get_data(filepath):
         #output_dict[attack_id].append(offside_line_defense_word)
         #output_dict[attack_id].append(front_line_word)
         output_dict[attack_id].append(compactness__offside)
+        output_dict[attack_id].append(neighbor_player)
 
     for attack_id, row in output_dict.items():
         output_list.append(' '.join(row))
@@ -98,7 +100,7 @@ def main(documents):
     # print()
 
     global MODEL
-    MODEL = models.ldamodel.LdaModel(corpus=corpus, id2word=DICTIONARY, num_topics=10)
+    MODEL = models.ldamodel.LdaModel(corpus=corpus, id2word=DICTIONARY, num_topics=5)
     # print(MODEL[new_vec])
 
 if __name__ == '__main__':
