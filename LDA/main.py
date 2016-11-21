@@ -3,8 +3,9 @@ https://openbook4.me/projects/193/sections/1154
 '''
 
 import os
-from gensim import corpora, models
+import csv
 import pandas as pd
+from gensim import corpora, models
 
 
 # global param
@@ -21,6 +22,15 @@ def read_csv(filepath):
     """
     dataframe = pd.read_csv(filepath, encoding='Shift_JIS', dtype='str')
     return dataframe.columns.tolist(), dataframe.values
+
+def write_csv(header, data, filepath):
+    """
+    write_csv
+    """
+    with open(filepath, 'w') as file_object:
+        writer = csv.writer(file_object, lineterminator='\n')
+        writer.writerow(header)
+        writer.writerows(data)
 
 def get_data(filepath):
     columns, rows = read_csv(filepath)
@@ -58,10 +68,40 @@ def get_data(filepath):
 
     return output_list
 
+def get_topic_dist(model, dictionary):
+    """
+    get_word_probability_sorted_by_topic
+    トピックごとの単語の出現頻度を出力
+    """
+
+    rows = []
+    columns = ["word"]
+    for word in dictionary.items():
+        word_id = word[0]
+        word_name = word[1]
+        print(word_id, word_name)
+        columns.append("%s"%word_name)
+
+    for topic in model.show_topics():
+        topic_id = topic[0]
+        row = [0] * len(columns)
+        row[0] = "topic[%s]"%topic_id
+        for word in model.show_topic(topic_id, len(columns)):
+            word_name = word[0]
+            word_probability = word[1]
+            row[columns.index(word_name)] = word_probability
+        rows.append(row)
+
+    filepath = get_absolute_path('tmp/get_topic_dist.csv')
+    write_csv(columns, rows, filepath)
+
 def main(documents):
     """
     main
     """
+    global DICTIONARY
+    global MODEL
+
     # remove common words and tokenize
     stoplist = set('for a of the and to in'.split())
     texts = [[word for word in document.lower().split() if word not in stoplist] for document in documents]
@@ -70,39 +110,21 @@ def main(documents):
     all_tokens = sum(texts, [])
     tokens_once = set(word for word in set(all_tokens) if all_tokens.count(word) == 1)
     texts = [[word for word in text if word not in tokens_once] for text in texts]
-    # print('texts')
-    # print(texts)
-    # print()
-        
-    
-    global DICTIONARY
+
     DICTIONARY = corpora.Dictionary(texts)
     DICTIONARY.save(get_absolute_path('tmp/deerwester.dict'))
     DICTIONARY.save_as_text(get_absolute_path('tmp/deerwester_text.dict'))
-    # print('DICTIONARY')
-    # print(DICTIONARY)
-    # print(DICTIONARY.token2id)
-    # print()
 
     new_doc = "Human computer interaction"
     new_vec = DICTIONARY.doc2bow(new_doc.lower().split())
-    # print('new_vec')
-    # print(new_vec)
-    # print()
 
     corpus = [DICTIONARY.doc2bow(text) for text in texts]
-    # store to disk, for later use
     corpora.MmCorpus.serialize(get_absolute_path('tmp/deerwester.mm'), corpus)
-    # print('corpus')
-    # print(corpus)
-    # print()
 
-    global MODEL
     MODEL = models.ldamodel.LdaModel(corpus=corpus, id2word=DICTIONARY, num_topics=10)
-    # print(MODEL[new_vec])
 
 if __name__ == '__main__':
-    DOC1 = get_data('LDAdocuments.csv')
+    DOC1 = get_data(get_absolute_path('tmp/LDAdocuments.csv'))
     DOC2 = ["Human machine interface for lab abc computer applications",
             "A survey of user opinion of computer system response time",
             "The EPS user interface management system",
@@ -113,3 +135,4 @@ if __name__ == '__main__':
             "Graph minors IV Widths of trees and well quasi ordering",
             "Graph minors A survey"]
     main(DOC1)
+    get_topic_dist(MODEL, DICTIONARY)
