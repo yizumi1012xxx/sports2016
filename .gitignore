@@ -243,5 +243,6 @@ ModelManifest.xml
 
 # for sport2016
 *.pyc
+tmp/
 /data/
 /.vscode/
