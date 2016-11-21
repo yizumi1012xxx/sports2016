@@ -14,7 +14,9 @@ class SportsDatasetFrame():
                  ball_x: float, ball_y: float,
                  ball_player: SportsDatasetFramePlayer,
                  home_players: [SportsDatasetFramePlayer],
-                 away_players: [SportsDatasetFramePlayer]):
+                 away_players: [SportsDatasetFramePlayer],
+                 home_attack_direction: bool,
+                 away_attack_direction: bool):
         self.__match_status_id = match_status_id
         self.__frame_id = frame_id
         self.__history_id = history_id
@@ -23,6 +25,8 @@ class SportsDatasetFrame():
         self.__ball_player = ball_player
         self.__home_players = home_players
         self.__away_players = away_players
+        self.__home_attack_direction = home_attack_direction
+        self.__away_attack_direction = away_attack_direction
 
     def get_match_status_id(self) -> int:
         """
@@ -71,6 +75,20 @@ class SportsDatasetFrame():
         get_away_players
         """
         return self.__away_players
+
+    def get_home_attack_direction(self) -> bool:
+        """
+        get_home_attack_direction
+        True: positive, False: negative
+        """
+        return self.__home_attack_direction
+
+    def get_away_attack_direction(self) -> bool:
+        """
+        get_away_attack_direction
+        True: positive, False: negative
+        """
+        return self.__away_attack_direction
 
     def get_home_players_points(self):
         """

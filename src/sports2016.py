@@ -44,6 +44,7 @@ def main():
         for frame in SportsDataset(match_id, match_status_id).get_frames():
             print("analizing...[%s-%s-%s]" % (match_id, match_status_id, frame.get_frame_id()))
             var.update(frame)
+        break
 
     var.export(Path.get_desktop_path() + "output.csv")
 

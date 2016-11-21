@@ -19,9 +19,11 @@ class FrontLine:
         self.__home_players = []
         self.__home_players_x = []
         self.__home_players_y = []
+        self.__home_attack_direction = None
         self.__away_players = []
         self.__away_players_x = []
         self.__away_players_y = []
+        self.__away_attack_direction = None
 
     def __set_frame(self, frame: SportsDatasetFrame):
         self.__sports_dataset_frame = frame
@@ -30,10 +32,12 @@ class FrontLine:
         self.__home_players = self.__sports_dataset_frame.get_home_players()
         self.__home_players_x, self.__home_players_y =\
             self.__sports_dataset_frame.get_home_players_points()
+        self.__home_attack_direction = self.__sports_dataset_frame.get_home_attack_direction()
 
         self.__away_players = self.__sports_dataset_frame.get_away_players()
         self.__away_players_x, self.__away_players_y =\
             self.__sports_dataset_frame.get_away_players_points()
+        self.__away_attack_direction = self.__sports_dataset_frame.get_away_attack_direction()
 
     def get_name(self):
         """

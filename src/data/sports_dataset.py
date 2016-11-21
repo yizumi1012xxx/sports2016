@@ -3,6 +3,7 @@
 sports_dataset.py
 """
 
+from common.common import Config
 from data.ball_touch import BallTouchCustom
 from data.tracking import Tracking
 from data.sports_dataset_frame import SportsDatasetFrame
@@ -24,6 +25,18 @@ class SportsDataset():
         self.__frames = []
         self.__get_frames()
 
+    def __home_attack_positive_direction(self) -> bool:
+        for match in Config.load()["TRACKING_DATA_CONFIG"]:
+            match_id = int(match["試合ID"])
+            match_status_id = int(match["試合状態ID"])
+            home_attack_direction = match["HOME_TEAM_ATTACK_DIRECTION"]
+            if self.__match_id == match_id and self.__match_status_id == match_status_id:
+                if home_attack_direction == "positive":
+                    return True
+                else:
+                    return False
+        raise ValueError("指定の試合が見つかりませんでした。")
+
     def __get_frames(self) -> None:
         for frame in self.__ball_touch.get_frames():
             # ball_touch frame
@@ -36,6 +49,8 @@ class SportsDataset():
             ball_player = None
             home_players = []
             away_players = []
+            home_attack_direction = self.__home_attack_positive_direction()
+            away_attack_direction = not home_attack_direction
 
             print("loading...[%s-%s-%s]" % (self.__match_id, self.__match_status_id, frame_id))
             # tracking frame
@@ -63,8 +78,8 @@ class SportsDataset():
                     pass
 
             self.__frames.append(SportsDatasetFrame(
-                self.__match_status_id, frame_id, history_id, ball_x, ball_y,
-                ball_player, home_players, away_players))
+                self.__match_status_id, frame_id, history_id, ball_x, ball_y, ball_player,
+                home_players, away_players, home_attack_direction, away_attack_direction))
 
     def get_frames(self) -> [SportsDatasetFrame]:
         """
