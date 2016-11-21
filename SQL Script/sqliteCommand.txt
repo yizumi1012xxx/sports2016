@@ -19,13 +19,13 @@ create table attack
 	order by rowid;
 
 create table attack_ha
-	as select attack.*, playdata.ホームアウェイF 
+	as select attack.*, playdata.ホームアウェイF, playdata.攻撃方向
 	from attack
 	inner join playdata 
 		on attack.試合ID||attack.攻撃開始履歴No = playdata.試合ID||playdata.履歴No;
 
 create table playdata3
-	as select playdata2.*, attack_ha.ホームアウェイF as attackTeam
+	as select playdata2.*, attack_ha.ホームアウェイF as attackTeam, attack_ha.攻撃方向 as attackDirection
 	from playdata2
 	inner join attack_ha
 		on playdata2.試合ID||playdata2.攻撃番号 = attack_ha.試合ID||attack_ha.攻撃番号;
@@ -47,6 +47,7 @@ select
 	playdata3.ボールＸ as ballX,
 	playdata3.ボールＹ as ballY,
 	playdata3.attackTeam as attackTeam,
+	playdata3.attackDirection as attackDirection,
 	attack_ha.rowid as attackID,
 	
 	case when attackTeam = playdata3.ホームアウェイF then "hotzone_"||playdata3."HOTZONE6-9"
@@ -62,7 +63,7 @@ from playdata3
 inner join attack_ha
 	on playdata3.試合ID||playdata3.攻撃番号 = attack_ha.試合ID||attack_ha.攻撃番号;
 
-.output output.csv
+.output data4LDA_action.csv
 select * from data4LDA;
 .output stdout
 
@@ -257,6 +258,7 @@ from tracking_mod;
 
 create table LDAdocuments as 
 select
+	data4LDA.attackID,
 	data4LDA.hotzone,
 	data4LDA.actionWord,
 	tracking_word.CompactnessAttackWord,
@@ -269,14 +271,6 @@ select
 from data4LDA
 inner join tracking_word
 on data4LDA.rowid = tracking_word.rowid;
-
-
-
-
-
-
-
-
 
 
 	
