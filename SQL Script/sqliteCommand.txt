@@ -254,6 +254,7 @@ select
 	"NeighborPlayer_"||NeighborPlayerOfBefore2||NeighborPlayerOfRight2||NeighborPlayerOfLeft2||NeighborPlayerOfBehind2 as NeighborPlayerWord	
 from tracking_mod;
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 create table LDAdocuments as 
@@ -267,10 +268,21 @@ select
 	tracking_word.VulnerabilityDefenseWord,
 	tracking_word.OffsideLineAttackWord,
 	tracking_word.OffsideLineDefenseWord,
-	tracking_word.FrontLineWord
+	tracking_word.FrontLineWord,
+	tracking_word.CompactnessDefenseWord||"__"||tracking_word.OffsideLineDefenseWord as Compactness__Offside,
+	tracking_word.NeighborPlayerWord
 from data4LDA
 inner join tracking_word
 on data4LDA.rowid = tracking_word.rowid;
+
+
+;;;;;;;
+.mode csv
+.headers on
+.separator ,
+.output LDAdocuments.csv
+select * from LDAdocuments;
+.output stdout
 
 
 	
