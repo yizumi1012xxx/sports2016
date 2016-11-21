@@ -6,6 +6,7 @@ https://radimrehurek.com/gensim/apiref.html
 import os
 import csv
 import pandas as pd
+import numpy as np
 from gensim import corpora, models
 
 def get_absolute_path(filepath):
@@ -65,10 +66,28 @@ def get_data(filepath):
 
     return output_list
 
-def get_topic_distribution_of_doc(model, dictionary):
+def get_topic_distribution_of_doc(model, dictionary, documents):
     """
     ドキュメントごとのトピック分布を出力
     """
+
+    columns = ["topic0", "topic1", "topic2", "topic3", "topic4"]
+    output = []
+    for document in documents:
+        temp = np.zeros(5) # topic number
+        bow = dictionary.doc2bow(document.lower().split())
+        topics = model.get_document_topics(bow, 0)
+        for topic in topics:
+            topic_id = topic[0]
+            topic_probability = topic[1]
+            print(topic_id, topic_probability)
+            temp[topic_id] = topic_probability
+        output.append(temp)
+    output = np.array(output)
+
+    filepath = get_absolute_path('tmp/get_topic_distribution_of_doc.csv')
+    write_csv(columns, output, filepath)
+
 
 def get_word_distribution_of_topic(model, dictionary):
     """
@@ -79,7 +98,6 @@ def get_word_distribution_of_topic(model, dictionary):
     for word in dictionary.items():
         word_id = word[0]
         word_name = word[1]
-        print(word_id, word_name)
         columns.append("%s"%word_name)
 
     for topic in model.show_topics():
@@ -92,7 +110,7 @@ def get_word_distribution_of_topic(model, dictionary):
             row[columns.index(word_name)] = word_probability
         rows.append(row)
 
-    filepath = get_absolute_path('tmp/get_topic_dist.csv')
+    filepath = get_absolute_path('tmp/get_word_distribution_of_topic.csv')
     write_csv(columns, rows, filepath)
 
 def main(documents):
@@ -119,7 +137,8 @@ def main(documents):
     corpus = [dictionary.doc2bow(text) for text in texts]
     corpora.MmCorpus.serialize(get_absolute_path('tmp/deerwester.mm'), corpus)
 
-    model = models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=10)
+    # https://radimrehurek.com/gensim/models/ldamodel.html
+    model = models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=5)
     return dictionary, model
 
 if __name__ == '__main__':
@@ -135,3 +154,4 @@ if __name__ == '__main__':
             "Graph minors A survey"]
     DICTIONARY, MODEL = main(DOC1)
     get_word_distribution_of_topic(MODEL, DICTIONARY)
+    get_topic_distribution_of_doc(MODEL, DICTIONARY, DOC1)
