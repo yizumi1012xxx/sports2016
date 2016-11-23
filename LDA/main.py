@@ -119,13 +119,13 @@ def main(documents):
     """
 
     # remove common words and tokenize
-    stoplist = set('for a of the and to in'.split())
-    texts = [[word for word in document.lower().split() if word not in stoplist] for document in documents]
-
+    # stoplist = set('for a of the and to in'.split())
+    # texts = [[word for word in doc.lower().split() if word not in stoplist] for doc in documents]
     # remove words that appear only once
-    all_tokens = sum(texts, [])
-    tokens_once = set(word for word in set(all_tokens) if all_tokens.count(word) == 1)
-    texts = [[word for word in text if word not in tokens_once] for text in texts]
+    # all_tokens = sum(texts, [])
+    # tokens_once = set(word for word in set(all_tokens) if all_tokens.count(word) == 1)
+    # texts = [[word for word in text if word not in tokens_once] for text in texts]
+    texts = [[word for word in doc.lower().split()] for doc in documents]
 
     dictionary = corpora.Dictionary(texts)
     dictionary.save(get_absolute_path('tmp/deerwester.dict'))
@@ -137,7 +137,6 @@ def main(documents):
     corpus = [dictionary.doc2bow(text) for text in texts]
     corpora.MmCorpus.serialize(get_absolute_path('tmp/deerwester.mm'), corpus)
 
-    # https://radimrehurek.com/gensim/models/ldamodel.html
     model = models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=5)
     return dictionary, model
 
