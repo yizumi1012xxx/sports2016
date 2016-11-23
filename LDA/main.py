@@ -36,13 +36,13 @@ def get_data(filepath):
         attack_id = row[columns.index("attackID")]
         hotzone = row[columns.index("hotzone")]
         action_word = row[columns.index("actionWord")]
-        compactness_attack_word = row[columns.index("CompactnessAttackWord")]
-        compactness_defense_word = row[columns.index("CompactnessDefenseWord")]
-        vulnerability_attack_word = row[columns.index("VulnerabilityAttackWord")]
+        # compactness_attack_word = row[columns.index("CompactnessAttackWord")]
+        # compactness_defense_word = row[columns.index("CompactnessDefenseWord")]
+        # vulnerability_attack_word = row[columns.index("VulnerabilityAttackWord")]
         vulnerability_defense_word = row[columns.index("VulnerabilityDefenseWord")]
-        offside_line_attack_word = row[columns.index("OffsideLineAttackWord")]
-        offside_line_defense_word = row[columns.index("OffsideLineDefenseWord")]
-        front_line_word = row[columns.index("FrontLineWord")]
+        # offside_line_attack_word = row[columns.index("OffsideLineAttackWord")]
+        # offside_line_defense_word = row[columns.index("OffsideLineDefenseWord")]
+        # front_line_word = row[columns.index("FrontLineWord")]
         compactness__offside = row[columns.index("Compactness__Offside")]
         neighbor_player = row[columns.index("NeighborPlayerWord")]
 
@@ -68,35 +68,35 @@ def get_data(filepath):
 
 def get_topic_distribution_of_doc(model, dictionary, documents):
     """
-    ドキュメントごとのトピック分布を出力
+    get_topic_distribution_of_doc
     """
+    columns = []
+    rows = []
+    for topic in model.show_topics():
+        topic_id, _ = topic
+        columns.append("topic%s"%topic_id)
 
-    columns = ["topic0", "topic1", "topic2", "topic3", "topic4"]
-    output = []
     for document in documents:
-        temp = np.zeros(5) # topic number
+        row = [0] * len(columns)
         bow = dictionary.doc2bow(document.lower().split())
-        topics = model.get_document_topics(bow, 0)
-        for topic in topics:
-            topic_id = topic[0]
-            topic_probability = topic[1]
-            temp[topic_id] = topic_probability
-        output.append(temp)
-    output = np.array(output)
+        for topic in model.get_document_topics(bow, 0):
+            topic_id, topic_probability = topic
+            row[topic_id] = topic_probability
+        rows.append(row)
 
     filepath = get_absolute_path('tmp/get_topic_distribution_of_doc.csv')
-    write_csv(columns, output, filepath)
+    write_csv(columns, rows, filepath)
 
 
 def get_word_distribution_of_topic(model, dictionary):
     """
     トピックごとの単語分布を出力
     """
-    rows = []
     columns = ["word"]
+    rows = []
+
     for word in dictionary.items():
-        word_id = word[0]
-        word_name = word[1]
+        _, word_name = word
         columns.append("%s"%word_name)
 
     for topic in model.show_topics():
@@ -143,17 +143,16 @@ def main():
     """
     main
     """
-    docs_1 = get_data(get_absolute_path('tmp/LDAdocuments.csv'))
-    docs_2 = ["Human machine interface for lab abc computer applications",
-              "A survey of user opinion of computer system response time",
-              "The EPS user interface management system",
-              "System and human system engineering testing of EPS",
-              "Relation of user perceived response time to error measurement",
-              "The generation of random binary unordered trees",
-              "The intersection graph of paths in trees",
-              "Graph minors IV Widths of trees and well quasi ordering",
-              "Graph minors A survey"]
-    docs = docs_1
+    docs = get_data(get_absolute_path('tmp/LDAdocuments.csv'))
+    # docs = ["Human machine interface for lab abc computer applications",
+    #         "A survey of user opinion of computer system response time",
+    #         "The EPS user interface management system",
+    #         "System and human system engineering testing of EPS",
+    #         "Relation of user perceived response time to error measurement",
+    #         "The generation of random binary unordered trees",
+    #         "The intersection graph of paths in trees",
+    #         "Graph minors IV Widths of trees and well quasi ordering",
+    #         "Graph minors A survey"]
 
     dictionary, model = get_model(docs, 10)
     get_word_distribution_of_topic(model, dictionary)
