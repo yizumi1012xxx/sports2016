@@ -80,7 +80,6 @@ def get_topic_distribution_of_doc(model, dictionary, documents):
         for topic in topics:
             topic_id = topic[0]
             topic_probability = topic[1]
-            print(topic_id, topic_probability)
             temp[topic_id] = topic_probability
         output.append(temp)
     output = np.array(output)
@@ -113,7 +112,7 @@ def get_word_distribution_of_topic(model, dictionary):
     filepath = get_absolute_path('tmp/get_word_distribution_of_topic.csv')
     write_csv(columns, rows, filepath)
 
-def main(documents):
+def get_model(documents, num_topics):
     """
     main
     """
@@ -137,20 +136,29 @@ def main(documents):
     corpus = [dictionary.doc2bow(text) for text in texts]
     corpora.MmCorpus.serialize(get_absolute_path('tmp/deerwester.mm'), corpus)
 
-    model = models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=5)
+    model = models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=num_topics)
     return dictionary, model
 
+def main():
+    """
+    main
+    """
+    docs_1 = get_data(get_absolute_path('tmp/LDAdocuments.csv'))
+    docs_2 = ["Human machine interface for lab abc computer applications",
+              "A survey of user opinion of computer system response time",
+              "The EPS user interface management system",
+              "System and human system engineering testing of EPS",
+              "Relation of user perceived response time to error measurement",
+              "The generation of random binary unordered trees",
+              "The intersection graph of paths in trees",
+              "Graph minors IV Widths of trees and well quasi ordering",
+              "Graph minors A survey"]
+    docs = docs_1
+
+    dictionary, model = get_model(docs, 10)
+    get_word_distribution_of_topic(model, dictionary)
+    get_topic_distribution_of_doc(model, dictionary, docs)
+    return docs, dictionary, model
+
 if __name__ == '__main__':
-    DOC1 = get_data(get_absolute_path('tmp/LDAdocuments.csv'))
-    DOC2 = ["Human machine interface for lab abc computer applications",
-            "A survey of user opinion of computer system response time",
-            "The EPS user interface management system",
-            "System and human system engineering testing of EPS",
-            "Relation of user perceived response time to error measurement",
-            "The generation of random binary unordered trees",
-            "The intersection graph of paths in trees",
-            "Graph minors IV Widths of trees and well quasi ordering",
-            "Graph minors A survey"]
-    DICTIONARY, MODEL = main(DOC1)
-    get_word_distribution_of_topic(MODEL, DICTIONARY)
-    get_topic_distribution_of_doc(MODEL, DICTIONARY, DOC1)
+    DOCUMENTS, DICTIONARY, MODEL = main()
